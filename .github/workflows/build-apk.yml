@@ -26,11 +26,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Setup Android SDK
+      - name: Install Android SDK
         uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        with:
+          packages: |
+            platforms;android-35
+            build-tools;35.0.0
 
       - name: Build debug APK
         run: gradle assembleDebug
@@ -39,4 +40,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: BintangSemesta3D-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apkapk
+          path: app/build/outputs/apk/debug/app-debug.apk
