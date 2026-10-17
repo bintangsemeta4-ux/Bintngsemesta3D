@@ -37,6 +37,14 @@ main{min-width:0;display:flex;flex-direction:column}.toolbar{padding:9px 12px;di
 <p class="note">Prototipe visual konsep, bukan gambar kerja konstruksi. Mesin 3D dimuat dari CDN sehingga perlu koneksi internet.</p>
 </aside><main><div class="toolbar"><button class="secondary" id="front">Tampak depan</button><button class="secondary" id="top">Tampak atas</button><button class="secondary" id="iso">Isometrik</button><button class="secondary" id="gridBtn">Garis bantu</button><span class="hint">Geser untuk putar · cubit/scroll untuk zoom</span></div>
 <div id="view"><canvas id="canvas"></canvas><div class="hud"><b id="hudName">Rumah Minimalis</b><br><span id="hudSize">10 × 6 × 3.5 m</span><br><span>Putar tampilan dengan satu jari</span></div></div><div class="status" id="status">Siap. Atur ukuran bangunan dan harga proyek di panel kiri.</div></main></div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
