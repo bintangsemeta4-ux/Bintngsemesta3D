@@ -8,7 +8,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
-import android.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewAssetLoader;
 import java.io.IOException;
 
 public class MainActivity extends Activity {
