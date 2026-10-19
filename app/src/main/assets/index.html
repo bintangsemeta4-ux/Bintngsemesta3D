@@ -80,9 +80,164 @@ background:#233650;color:#edf6ff;border:1px solid #3b5474;border-radius:9px}
  .badge{font-size:9px}
 }
 
+
+/* BINTANG SEMESTA MOBILE WORKSPACE V4 */
+html,body{width:100%;height:100%;margin:0}
+body{min-height:100dvh;overflow:hidden}
+header{min-height:48px;padding:7px 10px;flex:0 0 auto}
+.brand{font-size:13px}
+.brand small{font-size:10px}
+.layout.workspace-pro{
+  display:grid;
+  grid-template-columns:270px minmax(0,1fr);
+  min-width:0;
+  min-height:0;
+  height:calc(100dvh - 48px);
+  overflow:hidden;
+}
+.workspace-pro>aside{
+  grid-column:1;
+  grid-row:1;
+  min-width:0;
+  width:auto;
+  height:100%;
+  max-height:none;
+  overflow:auto;
+  overscroll-behavior:contain;
+  border-left:0;
+  border-right:1px solid var(--line);
+  border-bottom:0;
+  padding:10px;
+  z-index:20;
+}
+.workspace-pro>main{
+  grid-column:2;
+  grid-row:1;
+  min-width:0;
+  min-height:0;
+  height:100%;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+#bsProToolbar,.toolbar{flex:0 0 auto}
+#bsProToolbar{padding:6px;gap:5px}
+#bsProToolbar button{padding:8px 9px;font-size:11px}
+.toolbar{padding:6px;gap:5px}
+.toolbar button{padding:7px 8px;font-size:11px}
+#view{
+  flex:1 1 auto;
+  min-height:0;
+  height:auto;
+  position:relative;
+  overflow:hidden;
+}
+#canvas{display:block;width:100%;height:100%;touch-action:none}
+.workspace-foot{flex:0 0 auto;padding:6px;gap:5px}
+.workspace-foot>div{padding:6px}
+.status{flex:0 0 auto;padding:5px 8px}
+#bsPanelToggle{
+  display:none;
+  border:1px solid #3b5474;
+  border-radius:9px;
+  padding:8px 10px;
+  color:#eaf1fb;
+  background:#233650;
+  font-weight:800;
+}
+#bsPanelShade{display:none}
+
+@media(max-width:800px) and (orientation:portrait){
+  header{gap:6px}
+  .brand{font-size:11px}
+  .brand small{font-size:9px}
+  .badge{font-size:9px;padding:4px 6px}
+  #bsPanelToggle{display:inline-flex;align-items:center;gap:5px}
+  .layout.workspace-pro{
+    display:block;
+    height:calc(100dvh - 46px);
+    min-height:0;
+  }
+  .workspace-pro>aside{
+    position:fixed;
+    z-index:1002;
+    top:46px;
+    bottom:0;
+    left:0;
+    width:min(88vw,350px);
+    height:auto;
+    max-height:none;
+    background:var(--panel);
+    border-right:1px solid var(--line);
+    box-shadow:12px 0 35px #0008;
+    transform:translateX(-105%);
+    visibility:hidden;
+    transition:transform .22s ease,visibility .22s;
+  }
+  body.bs-panel-open .workspace-pro>aside{
+    transform:translateX(0);
+    visibility:visible;
+  }
+  .workspace-pro>main{
+    width:100%;
+    height:100%;
+    min-height:0;
+  }
+  #bsProToolbar{gap:5px;padding:5px}
+  #bsProToolbar button{padding:8px;font-size:11px}
+  .toolbar{gap:4px;padding:5px}
+  .toolbar button{font-size:10px;padding:7px 6px}
+  .toolbar .hint{display:none}
+  #view{height:auto;min-height:0;flex:1 1 0}
+  .hud{left:6px;top:6px;padding:5px 7px;font-size:10px}
+  .workspace-foot{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .workspace-foot>div{padding:4px 6px}
+  .workspace-foot small{font-size:9px}
+  .workspace-foot b{font-size:10px}
+  .status{font-size:10px}
+  #bsPanelShade{
+    display:block;
+    position:fixed;
+    z-index:1001;
+    inset:46px 0 0;
+    background:#0008;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .2s ease,visibility .2s;
+  }
+  body.bs-panel-open #bsPanelShade{opacity:1;visibility:visible}
+}
+@media(max-width:800px) and (orientation:landscape){
+  .layout.workspace-pro{
+    grid-template-columns:210px minmax(0,1fr);
+    height:calc(100dvh - 42px);
+  }
+  header{min-height:42px;padding:4px 8px}
+  .brand{font-size:11px}
+  .brand small{font-size:9px}
+  .workspace-pro>aside{padding:7px}
+  .group{padding:8px;margin-bottom:7px}
+  #bsProToolbar{padding:4px;gap:4px}
+  #bsProToolbar button{padding:6px;font-size:10px}
+  .toolbar{padding:4px;gap:4px}
+  .toolbar button{padding:6px;font-size:10px}
+  #view{min-height:0;height:auto;flex:1 1 0}
+  .workspace-foot{grid-template-columns:repeat(2,minmax(0,1fr));padding:4px}
+  .workspace-foot>div{padding:4px}
+  .workspace-foot small{font-size:9px}
+  .workspace-foot b{font-size:10px}
+  .status{padding:3px 6px;font-size:9px}
+}
+@media(min-width:801px){
+  .workspace-pro{grid-template-columns:300px minmax(0,1fr)}
+  .workspace-pro>aside{border-right:1px solid var(--line);border-left:0}
+}
+
 </style></head>
 <body>
-<header><div class="brand">✦ BINTANG SEMESTA <small>3D Building & Interior Designer · Versi 3</small></div><span class="badge">EDITOR + RAB</span></header>
+<header><div class="brand">✦ BINTANG SEMESTA <small>3D Building & Interior Designer · Versi 3</small></div><span class="badge">EDITOR + RAB</span><button id="bsPanelToggle" type="button" aria-expanded="false">☰ Panel</button>
+</header>
+<div id="bsPanelShade"></div>
 <div class="layout workspace-pro"><aside>
 <div class="group" id="objectCatalog">
  <h3>✦ Katalog Objek 3D</h3>
@@ -685,4 +840,55 @@ $('loadFile').onchange=async e=>{
 $('export').onclick=()=>{let d=data(),w=window.open('','_blank');w.document.write(`<html><head><title>RAB ${d.projectName}</title><style>body{font:15px Arial;padding:30px;color:#172033}table{border-collapse:collapse;width:100%}td,th{border:1px solid #bbb;padding:10px;text-align:left}h1{color:#12665e}</style></head><body><h1>Bintang Semesta 3D Designer</h1><h2>${d.projectName}</h2><table><tr><th>Item</th><th>Nilai</th></tr><tr><td>Ukuran</td><td>${d.dimensions.L} × ${d.dimensions.W} × ${d.dimensions.H} m</td></tr><tr><td>Luas lantai/plafon</td><td>${d.calculation.area.toFixed(2)} m²</td></tr><tr><td>Luas perkiraan 4 dinding</td><td>${d.calculation.wallArea.toFixed(2)} m²</td></tr><tr><td>Estimasi biaya</td><td>${money(d.calculation.estimate)}</td></tr><tr><td>Pemasukan</td><td>${money(d.prices.income)}</td></tr><tr><td>Pengeluaran aktual</td><td>${money(d.prices.actualExpense)}</td></tr><tr><td>Laba aktual</td><td>${money(d.calculation.profit)}</td></tr></table><p>Estimasi awal; verifikasi ukuran dan harga lapangan sebelum digunakan sebagai penawaran.</p><script>window.onload=()=>window.print()<\\/script></body></html>`);w.document.close()};
 $('csv').onclick=()=>{let d=data(),rows=[['Item','Nilai'],['Nama proyek',d.projectName],['Panjang (m)',d.dimensions.L],['Lebar (m)',d.dimensions.W],['Tinggi (m)',d.dimensions.H],['Luas plafon (m2)',d.calculation.ceiling],['Luas dinding perkiraan (m2)',d.calculation.wallArea],['Estimasi biaya (Rp)',d.calculation.estimate],['Pemasukan (Rp)',d.prices.income],['Pengeluaran aktual (Rp)',d.prices.actualExpense],['Laba aktual (Rp)',d.calculation.profit]],csv=rows.map(r=>r.map(x=>'"'+String(x??'').replaceAll('"','""')+'"').join(',')).join('\\r\\n'),b=new Blob(['\\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ringkasan_'+(d.projectName||'proyek').replace(/[^a-z0-9_-]/gi,'_')+'.csv';a.click();URL.revokeObjectURL(a.href)};
 function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}window.addEventListener('resize',resize);build();resize();animate();
+
+// === BS_PANEL_HANDLER_V1 ===
+(() => {
+  const button = document.getElementById('bsPanelToggle');
+  const shade = document.getElementById('bsPanelShade');
+  const body = document.body;
+  const panel = document.querySelector('.workspace-pro > aside');
+
+  if (!button || !shade || !panel) {
+    console.error('Bintang Semesta: elemen panel tidak lengkap.');
+    return;
+  }
+
+  const isMobilePortrait = () =>
+    window.matchMedia('(max-width: 800px) and (orientation: portrait)').matches;
+
+  function closePanel() {
+    body.classList.remove('bs-panel-open');
+    button.setAttribute('aria-expanded', 'false');
+    button.textContent = '☰ Panel';
+  }
+
+  function togglePanel() {
+    if (!isMobilePortrait()) return;
+
+    const opened = body.classList.toggle('bs-panel-open');
+    button.setAttribute('aria-expanded', String(opened));
+    button.textContent = opened ? '✕ Tutup' : '☰ Panel';
+  }
+
+  button.addEventListener('click', togglePanel);
+  shade.addEventListener('click', closePanel);
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closePanel();
+  });
+
+  panel.addEventListener('click', event => {
+    if (isMobilePortrait() && event.target.closest('[data-object]')) {
+      closePanel();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (!isMobilePortrait()) closePanel();
+  });
+
+  closePanel();
+})();
+// === END BS_PANEL_HANDLER_V1 ===
+
 </script></body></html>
