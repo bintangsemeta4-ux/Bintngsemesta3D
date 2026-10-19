@@ -17,7 +17,7 @@ main{min-width:0;display:flex;flex-direction:column}.toolbar{padding:9px 12px;di
 @media(max-width:800px){.layout{grid-template-columns:1fr}.layout aside{max-height:none;border-right:0;border-bottom:1px solid var(--line)}#view{height:55vh;min-height:330px}.toolbar .hint{width:100%;margin-left:0}}
 </style></head>
 <body>
-<header><div class="brand">✦ BINTANG SEMESTA <small>3D Building & Interior Designer · Versi 2</small></div><span class="badge">EDITOR + RAB</span></header>
+<header><div class="brand">✦ BINTANG SEMESTA <small>3D Building & Interior Designer · Versi 3</small></div><span class="badge">EDITOR + RAB</span></header>
 <div class="layout"><aside>
 <div class="group"><h3>1. Ukuran Bangunan</h3>
 <div class="row"><div><label>Panjang (m)</label><input id="length" type="number" min="2" max="40" step=".5" value="10"></div><div><label>Lebar (m)</label><input id="width" type="number" min="2" max="40" step=".5" value="6"></div></div>
@@ -25,7 +25,29 @@ main{min-width:0;display:flex;flex-direction:column}.toolbar{padding:9px 12px;di
 <label>Warna dinding</label><input id="wallColor" type="color" value="#e8e1d3"><label>Warna lantai</label><input id="floorColor" type="color" value="#a8b3bf">
 <button class="primary" id="build">Buat / Perbarui Bangunan</button></div>
 <div class="group"><h3>2. Tambahkan Elemen</h3><label>Pilih elemen</label><select id="element"><option value="door">Pintu depan</option><option value="window">Jendela depan</option><option value="column">Kolom sudut</option><option value="room">Sekat ruangan</option><option value="ceiling">Plafon PVC visual</option></select>
-<button class="primary" id="add">Tambah Elemen</button><div class="buttons"><button class="secondary" id="undo">Hapus elemen terakhir</button><button class="secondary" id="reset">Reset desain</button></div></div>
+<label>Posisi elemen</label><select id="position"><option value="center">Tengah</option><option value="left">Kiri</option><option value="right">Kanan</option><option value="farleft">Kiri jauh</option><option value="farright">Kanan jauh</option></select><label>Sisi bangunan</label><select id="side"><option value="front">Depan</option><option value="back">Belakang</option><option value="left">Kiri bangunan</option><option value="right">Kanan bangunan</option></select><button class="primary" id="add">Tambah Elemen</button><div class="buttons"><button class="secondary" id="undo">Hapus elemen terakhir</button><button class="secondary" id="reset">Reset desain</button></div></div>
+
+<div class="group" id="manualEditor">
+<h3>3. Edit Manual 3D</h3>
+<label>Pilih elemen</label>
+<select id="editTarget"></select>
+<div class="row">
+<div><label>Posisi X (m)</label><input id="editX" type="number" step="0.1"></div>
+<div><label>Posisi Y (m)</label><input id="editY" type="number" step="0.1"></div>
+</div>
+<div class="row">
+<div><label>Posisi Z (m)</label><input id="editZ" type="number" step="0.1"></div>
+<div><label>Rotasi Y (derajat)</label><input id="editRotY" type="number" step="5"></div>
+</div>
+<div class="row">
+<div><label>Skala X</label><input id="editScaleX" type="number" min="0.1" step="0.1"></div>
+<div><label>Skala Y</label><input id="editScaleY" type="number" min="0.1" step="0.1"></div>
+</div>
+<label>Skala Z</label><input id="editScaleZ" type="number" min="0.1" step="0.1">
+<button class="primary" id="editApply" type="button">Terapkan Perubahan</button>
+<button class="secondary" id="editRefresh" type="button">Muat Posisi</button>
+<p class="note">X = kiri/kanan, Y = atas/bawah, Z = depan/belakang.</p>
+</div>
 <div class="group"><h3>3. Estimasi Biaya Proyek</h3><label>Nama proyek</label><input id="projectName" value="Rumah Minimalis">
 <div class="row"><div><label>Harga plafon / m² (Rp)</label><input id="ceilingPrice" type="number" min="0" value="85000"></div><div><label>Biaya pasang / m² (Rp)</label><input id="installPrice" type="number" min="0" value="35000"></div></div>
 <div class="row"><div><label>Material dinding / m² (Rp)</label><input id="wallPrice" type="number" min="0" value="120000"></div><div><label>Biaya lain (Rp)</label><input id="otherCost" type="number" min="0" value="500000"></div></div>
@@ -38,13 +60,8 @@ main{min-width:0;display:flex;flex-direction:column}.toolbar{padding:9px 12px;di
 </aside><main><div class="toolbar"><button class="secondary" id="front">Tampak depan</button><button class="secondary" id="top">Tampak atas</button><button class="secondary" id="iso">Isometrik</button><button class="secondary" id="gridBtn">Garis bantu</button><span class="hint">Geser untuk putar · cubit/scroll untuk zoom</span></div>
 <div id="view"><canvas id="canvas"></canvas><div class="hud"><b id="hudName">Rumah Minimalis</b><br><span id="hudSize">10 × 6 × 3.5 m</span><br><span>Putar tampilan dengan satu jari</span></div></div><div class="status" id="status">Siap. Atur ukuran bangunan dan harga proyek di panel kiri.</div></main></div>
 <script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
-  }
-}
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
 </script>
-
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
@@ -62,23 +79,100 @@ function box(g,w,h,d,x,y,z,m){let o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
 function clear(g){while(g.children.length){let o=g.children[0];g.remove(o);o.traverse(n=>{n.geometry?.dispose();if(n.material){if(Array.isArray(n.material))n.material.forEach(m=>m.dispose());else n.material.dispose()}})}}
 function updateCalc(){let {L,W,H}=dims(),area=L*W,wallArea=2*(L+W)*H,ceiling=area;let estimate=ceiling*(+$('ceilingPrice').value||0)+ceiling*(+$('installPrice').value||0)+wallArea*(+$('wallPrice').value||0)+(+$('otherCost').value||0);let profit=(+$('income').value||0)-(+$('actualExpense').value||0);
 $('area').textContent=area.toFixed(2)+' m²';$('ceilingArea').textContent=ceiling.toFixed(2)+' m²';$('estimate').textContent=money(estimate);$('profit').textContent=money(profit);$('hudName').textContent=$('projectName').value||'Proyek 3D';$('hudSize').textContent=`${L} × ${W} × ${H} m`;return {L,W,H,area,wallArea,ceiling,estimate,profit}}
-function build(){let {L,W,H,T}=dims();clear(building);extras=[];let wall=mat($('wallColor').value),floor=mat($('floorColor').value),trim=mat('#f8fafc');
+function build(){let {L,W,H,T}=dims();clear(building);extras=[];if(typeof refreshEditTargets==='function')refreshEditTargets();let wall=mat($('wallColor').value),floor=mat($('floorColor').value),trim=mat('#f8fafc');
 box(building,L,.12,W,0,.06,0,floor);box(building,L,H,T,0,H/2,-W/2,wall);box(building,L,H,T,0,H/2,W/2,wall);box(building,T,H,W,-L/2,H/2,0,wall);box(building,T,H,W,L/2,H/2,0,wall);
 box(building,L,.08,T*1.5,0,H,-W/2,trim);box(building,L,.08,T*1.5,0,H,W/2,trim);box(building,T*1.5,.08,W,-L/2,H,0,trim);box(building,T*1.5,.08,W,L/2,H,0,trim);
 const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(L,.12,W)),new THREE.LineBasicMaterial({color:'#40566e'}));outline.position.y=.06;building.add(outline);updateCalc();fitView();$('status').textContent='Bangunan diperbarui.'}
-function addElement(type){let {L,W,H,T}=dims(),g=new THREE.Group(),wood=mat('#8a5b3d'),glass=new THREE.MeshStandardMaterial({color:'#83d8f2',roughness:.18,transparent:true,opacity:.72}),white=mat('#f5f7fa');
-if(type==='door'){let h=Math.min(2.1,H-.3),w=Math.min(1,L*.16);box(g,w,h,.06,0,h/2,W/2+T*.55,wood);box(g,w*.82,h*.94,.025,0,h/2,W/2+T*.59,mat('#b9865e'))}
-if(type==='window'){let w=Math.min(1.5,L*.28),h=Math.min(1.1,H*.35);box(g,w,h,.05,0,H*.62,W/2+T*.58,glass);box(g,w+.12,.07,.07,0,H*.62-h/2,W/2+T*.6,white);box(g,w+.12,.07,.07,0,H*.62+h/2,W/2+T*.6,white);box(g,.05,h+.1,.07,0,H*.62,W/2+T*.6,white)}
-if(type==='column'){for(let x of [-L/2+T,L/2-T])for(let z of [-W/2+T,W/2-T])box(g,.22,H,.22,x,H/2,z,white)}
-if(type==='room')box(g,L*.55,H*.75,T,0,H*.375,0,mat('#d5cbbb'));
-if(type==='ceiling'){box(g,L-.08,.12,W-.08,0,H-.12,0,mat('#f5f3ed'));for(let x=-L/2+.2;x<L/2;x+=.35)box(g,.025,.02,W-.15,x,H-.045,0,mat('#b8c2cc'))}
-g.userData.type=type;extras.push(g);building.add(g);$('status').textContent='Elemen ditambahkan: '+type+'. Ini visual konsep sederhana.'}
+function addElement(type){
+ let {L,W,H,T}=dims(),g=new THREE.Group(),wood=mat('#8a5b3d'),glass=new THREE.MeshStandardMaterial({color:'#83d8f2',roughness:.18,transparent:true,opacity:.82}),white=mat('#f5f7fa'),frame=mat('#f8fafc');
+ const pos=$('position').value,side=$('side').value;
+ const offset=pos==='left'?-L*.23:pos==='right'?L*.23:pos==='farleft'?-L*.36:pos==='farright'?L*.36:0;
+ // Elements are placed on the selected wall, with safe margins and no default overlap.
+ if(type==='door'||type==='window'){
+   let x=Math.max(-L*.38,Math.min(L*.38,offset));
+   let z=side==='front'?W/2+T*.55:side==='back'?-W/2-T*.55:side==='left'?-L/2-T*.55:L/2+T*.55;
+   const onSide=side==='left'||side==='right';
+   if(type==='door'){
+     let h=Math.min(2.1,H-.25),w=Math.min(.95,L*.16);
+     if(onSide){g.rotation.y=side==='left'?-Math.PI/2:Math.PI/2;g.position.set(side==='left'?-L/2-T*.55: L/2+T*.55,0,Math.max(-W*.36,Math.min(W*.36,offset*W/L)));}
+     else g.position.set(x,0,side==='front'?W/2+T*.55:-W/2-T*.55);
+     box(g,w,h,.055,0,h/2,0,wood);box(g,w*.82,h*.94,.02,0,h/2,.04,mat('#b9865e'));box(g,.06,.06,.07,w*.32,h*.5,.08,mat('#e5c16c'));
+   } else {
+     let w=Math.min(1.35,L*.24),h=Math.min(1.05,H*.32),y=H*.62;
+     if(onSide){g.rotation.y=side==='left'?-Math.PI/2:Math.PI/2;g.position.set(side==='left'?-L/2-T*.58:L/2+T*.58,0,Math.max(-W*.36,Math.min(W*.36,offset*W/L)));}
+     else g.position.set(x,0,side==='front'?W/2+T*.58:-W/2-T*.58);
+     box(g,w,h,.045,0,y,0,glass);box(g,w+.12,.07,.075,0,y-h/2,0,frame);box(g,w+.12,.07,.075,0,y+h/2,0,frame);box(g,.055,h+.1,.075,0,y,0,frame);box(g,.04,h+.02,.08,0,y,0,frame);
+   }
+ }
+ if(type==='column'){
+   // Add one complete set only; corners are inset slightly from the exterior wall.
+   for(let x of [-L/2+T*.8,L/2-T*.8])for(let z of [-W/2+T*.8,W/2-T*.8])box(g,.24,H,.24,x,H/2,z,white);
+ }
+ if(type==='room'){
+   // Partition placed inside the footprint, offset according to position choice.
+   let x=pos==='left'?-L*.22:pos==='right'?L*.22:0;
+   box(g,T,H*.78,W*.58,x,H*.39,0,mat('#d5cbbb'));
+ }
+ if(type==='ceiling'){
+   box(g,L-.12,.12,W-.12,0,H-.12,0,mat('#f5f3ed'));
+   for(let x=-L/2+.18;x<L/2-.1;x+=.3)box(g,.025,.025,W-.22,x,H-.045,0,mat('#aab7c5'));
+ }
+ g.userData.type=type;g.userData.position=pos;g.userData.side=side;extras.push(g);building.add(g);refreshEditTargets();$('status').textContent='Elemen '+$('element').selectedOptions[0].text+' ditambahkan: posisi '+pos+', sisi '+side+'.';
+}
 function fitView(){let {L,W,H}=dims(),d=Math.max(L,W)*1.65;controls.target.set(0,H/2,0);camera.position.set(d*.95,d*.8,d*1.05);controls.update()}
 function resize(){let r=$('view').getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix()}
-$('build').onclick=build;$('add').onclick=()=>addElement($('element').value);$('undo').onclick=()=>{let g=extras.pop();if(g){building.remove(g);clear(g);$('status').textContent='Elemen terakhir dihapus.'}else $('status').textContent='Belum ada elemen tambahan.'};$('reset').onclick=()=>{build();$('status').textContent='Desain dasar direset.'};
+$('build').onclick=build;$('add').onclick=()=>{if($('element').value==='column'&&extras.some(g=>g.userData.type==='column')){$('status').textContent='Kolom sudut sudah ditambahkan. Hapus elemen terakhir jika ingin membuat ulang.';return}if($('element').value==='ceiling'&&extras.some(g=>g.userData.type==='ceiling')){$('status').textContent='Plafon visual sudah ada.';return}addElement($('element').value)};$('undo').onclick=()=>{let g=extras.pop();if(g){building.remove(g);clear(g);refreshEditTargets();$('status').textContent='Elemen terakhir dihapus.'}else $('status').textContent='Belum ada elemen tambahan.'};$('reset').onclick=()=>{build();$('status').textContent='Desain dasar direset.'};
 ['projectName','ceilingPrice','installPrice','wallPrice','otherCost','income','actualExpense'].forEach(id=>$(id).addEventListener('input',updateCalc));
 $('front').onclick=()=>{let {L,H}=dims();camera.position.set(0,H*.7,Math.max(L,6)*2.5);controls.target.set(0,H/2,0);controls.update()};$('top').onclick=()=>{let {L,W}=dims();camera.position.set(0,Math.max(L,W)*2.2,.001);controls.target.set(0,0,0);controls.update()};$('iso').onclick=fitView;$('gridBtn').onclick=()=>{grid.visible=!grid.visible};
-function data(){let calc=updateCalc();return {app:'Bintang Semesta 3D Designer',version:2,projectName:$('projectName').value,dimensions:dims(),wallColor:$('wallColor').value,floorColor:$('floorColor').value,prices:{ceiling:+$('ceilingPrice').value,install:+$('installPrice').value,wall:+$('wallPrice').value,other:+$('otherCost').value,income:+$('income').value,actualExpense:+$('actualExpense').value},calculation:calc,elements:extras.map(g=>g.userData.type),savedAt:new Date().toISOString()}}
+
+function refreshEditTargets(){
+ const sel=$('editTarget'),old=sel.value;
+ sel.innerHTML='';
+ extras.forEach((g,i)=>{
+   const op=document.createElement('option');
+   op.value=String(i);
+   op.textContent=(i+1)+'. '+(g.userData.type||'elemen')+' - '+(g.userData.side||'');
+   sel.appendChild(op);
+ });
+ if(!extras.length){
+   sel.add(new Option('Belum ada elemen',''));
+ }
+ sel.value=[...sel.options].some(o=>o.value===old)?old:(extras.length?String(extras.length-1):'');
+ syncEditFields();
+}
+function syncEditFields(){
+ const g=extras[Number($('editTarget').value)];
+ const ids=['editX','editY','editZ','editRotY','editScaleX','editScaleY','editScaleZ'];
+ $('editApply').disabled=!g;
+ ids.forEach(id=>$(id).disabled=!g);
+ if(!g)return;
+ $('editX').value=g.position.x.toFixed(2);
+ $('editY').value=g.position.y.toFixed(2);
+ $('editZ').value=g.position.z.toFixed(2);
+ $('editRotY').value=(g.rotation.y*180/Math.PI).toFixed(1);
+ $('editScaleX').value=g.scale.x.toFixed(2);
+ $('editScaleY').value=g.scale.y.toFixed(2);
+ $('editScaleZ').value=g.scale.z.toFixed(2);
+}
+$('editTarget').addEventListener('change',syncEditFields);
+$('editRefresh').addEventListener('click',syncEditFields);
+$('editApply').addEventListener('click',()=>{
+ const g=extras[Number($('editTarget').value)];
+ if(!g)return;
+ const n=id=>Number($(id).value);
+ const ids=['editX','editY','editZ','editRotY','editScaleX','editScaleY','editScaleZ'];
+ if(ids.some(id=>!Number.isFinite(n(id)))||
+    ['editScaleX','editScaleY','editScaleZ'].some(id=>n(id)<=0)){
+   $('status').textContent='Periksa nilai posisi dan skala.';
+   return;
+ }
+ g.position.set(n('editX'),n('editY'),n('editZ'));
+ g.rotation.y=n('editRotY')*Math.PI/180;
+ g.scale.set(n('editScaleX'),n('editScaleY'),n('editScaleZ'));
+ $('status').textContent='Posisi elemen berhasil diperbarui.';
+});
+
+function data(){let calc=updateCalc();return {app:'Bintang Semesta 3D Designer',version:3,projectName:$('projectName').value,dimensions:dims(),wallColor:$('wallColor').value,floorColor:$('floorColor').value,prices:{ceiling:+$('ceilingPrice').value,install:+$('installPrice').value,wall:+$('wallPrice').value,other:+$('otherCost').value,income:+$('income').value,actualExpense:+$('actualExpense').value},calculation:calc,elements:extras.map(g=>g.userData.type),savedAt:new Date().toISOString()}}
 $('save').onclick=()=>{let d=data(),b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(d.projectName||'desain').replace(/[^a-z0-9_-]/gi,'_')+'.json';a.click();URL.revokeObjectURL(a.href);$('status').textContent='Konfigurasi desain disimpan sebagai JSON.'};
 $('loadFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(d.dimensions){$('length').value=d.dimensions.L;$('width').value=d.dimensions.W;$('height').value=d.dimensions.H;$('thickness').value=d.dimensions.T}if(d.prices){$('ceilingPrice').value=d.prices.ceiling??85000;$('installPrice').value=d.prices.install??35000;$('wallPrice').value=d.prices.wall??120000;$('otherCost').value=d.prices.other??500000;$('income').value=d.prices.income??0;$('actualExpense').value=d.prices.actualExpense??0}$('projectName').value=d.projectName||'Proyek';$('wallColor').value=d.wallColor||'#e8e1d3';$('floorColor').value=d.floorColor||'#a8b3bf';build();$('status').textContent='Konfigurasi dimuat. Elemen tambahan dapat ditambahkan ulang dari menu.'}catch(err){$('status').textContent='File JSON tidak valid.'}};
 $('export').onclick=()=>{let d=data(),w=window.open('','_blank');w.document.write(`<html><head><title>RAB ${d.projectName}</title><style>body{font:15px Arial;padding:30px;color:#172033}table{border-collapse:collapse;width:100%}td,th{border:1px solid #bbb;padding:10px;text-align:left}h1{color:#12665e}</style></head><body><h1>Bintang Semesta 3D Designer</h1><h2>${d.projectName}</h2><table><tr><th>Item</th><th>Nilai</th></tr><tr><td>Ukuran</td><td>${d.dimensions.L} × ${d.dimensions.W} × ${d.dimensions.H} m</td></tr><tr><td>Luas lantai/plafon</td><td>${d.calculation.area.toFixed(2)} m²</td></tr><tr><td>Luas perkiraan 4 dinding</td><td>${d.calculation.wallArea.toFixed(2)} m²</td></tr><tr><td>Estimasi biaya</td><td>${money(d.calculation.estimate)}</td></tr><tr><td>Pemasukan</td><td>${money(d.prices.income)}</td></tr><tr><td>Pengeluaran aktual</td><td>${money(d.prices.actualExpense)}</td></tr><tr><td>Laba aktual</td><td>${money(d.calculation.profit)}</td></tr></table><p>Estimasi awal; verifikasi ukuran dan harga lapangan sebelum digunakan sebagai penawaran.</p><script>window.onload=()=>window.print()<\\/script></body></html>`);w.document.close()};
