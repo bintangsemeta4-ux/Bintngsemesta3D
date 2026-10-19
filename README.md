@@ -1,17 +1,8 @@
-# Bintang Semesta 3D — Android WebView project
+# Bintang Semesta 3D Designer V3 (Android WebView project)
 
-Paket ini adalah **proyek sumber Android untuk membangun APK**, bukan file APK yang sudah dikompilasi.
+V3 improves placement controls for doors and windows: choose position (left/center/right/far left/far right) and building side (front/back/left/right). Columns and ceiling visuals are guarded against accidental duplicates. Includes project cost estimates and JSON/CSV/PDF actions from V2.
 
-## Cara termudah menghasilkan APK
-1. Buat repositori GitHub baru.
-2. Ekstrak ZIP ini, lalu unggah seluruh isi folder proyek ke repositori (termasuk folder `.github/workflows`).
-3. Buka tab **Actions** di repositori GitHub.
-4. Jalankan workflow **Build Bintang Semesta APK** (atau push ke branch `main`).
-5. Setelah workflow selesai, buka hasil run → bagian **Artifacts** → unduh `BintangSemesta3D-debug-apk.zip`.
-6. Ekstrak ZIP artifact dan pasang `app-debug.apk` di Android. Jika diminta, izinkan pemasangan dari sumber tersebut.
+## Build APK
+Upload the full project contents to your GitHub repository, keeping `.github/workflows/build-apk.yml`. Commit changes, then open Actions and run **Build Bintang Semesta APK**. On a successful run, download the artifact ZIP and install the APK inside it.
 
-## Catatan
-- Aplikasi memakai WebView untuk menampilkan editor yang sudah ada.
-- Three.js dimuat dari CDN, jadi koneksi internet dibutuhkan untuk tampilan 3D.
-- Ini APK debug untuk uji coba, bukan rilis Play Store.
-- Periksa semua ukuran dan estimasi secara mandiri; ini prototipe konsep, bukan gambar kerja konstruksi.
+The app loads Three.js from a CDN, so an internet connection is required for the 3D renderer. This is a conceptual visualizer, not a construction drawing/CAD tool; wall openings are not yet Boolean cut-outs.
